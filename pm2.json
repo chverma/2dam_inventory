@@ -1,0 +1,15 @@
+{
+    "name": "2dam_inventory",
+    "actualitzar": "Cal pujar versio node i npm",
+    "script": "npm i && sleep 400 # npm run start:dev",
+    "instances": "1",
+    "env": {
+        "NODE_ENV": "development"
+    },
+    "env_production": {
+        "NODE_ENV": "production"
+    },
+    "watch": false,
+    "ignore_watch": [".*", "node_modules", "dist"],
+    "merge_logs": true
+}
