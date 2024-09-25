@@ -1,5 +1,5 @@
 //lógica de negocio
-//Este archivo se encarga de implementar la lógica real de los métodos que definimos en el controlador. 
+//Este archivo se encarga de implementar la lógica real de los métodos que definimos en el controlador.
 //Aquí se haría la interacción con la base de datos
 
 import { Injectable } from '@nestjs/common';
@@ -33,4 +33,3 @@ export class InventariTypeService {
     this.inventariTypes = this.inventariTypes.filter((item) => item.id !== id);
   }
 }
-

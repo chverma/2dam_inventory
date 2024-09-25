@@ -1,36 +1,59 @@
-import { Controller, Get, Post, Put, Delete, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  HttpStatus,
+  HttpException,
+  Body,
+} from '@nestjs/common';
 import { IssuesService } from './issues.service';
-
 @Controller('issues')
 export class IssuesController {
-  private issueService: IssuesService;
-
-  constructor(issuesService: IssuesService) {
-    this.issueService = issuesService;
+  private IssuesService: IssuesService;
+  constructor(IssuesService: IssuesService) {
+    this.IssuesService = IssuesService;
   }
-
   @Get()
-  getAllIssues() {
-    return this.issueService.getAllIssues();
+  getAllStatus() {
+    try {
+      return this.IssuesService.getAllIssues();
+    } catch (err) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: err,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          cause: err,
+        },
+      );
+    }
   }
 
   @Post()
-  createIssue() {
-    return this.issueService.createIssue();
+  createIssue(@Body() Issue) {
+    return this.IssuesService.createIssue(Issue);
   }
 
   @Get(':id')
   getIssue(@Param('id') id: string) {
-    return this.issueService.getIssue(parseInt(id));
+    return this.IssuesService.getIssue(parseInt(id));
   }
 
   @Put(':id')
-  updateIssue(@Param('id') id: string) {
-    return this.issueService.updateIssue(parseInt(id));
+  updateIssue(@Param('id') id: string, @Body() Issue) {
+    return this.IssuesService.updateIssue({
+      ...Issue,
+      id_issue: parseInt(id),
+    });
   }
 
   @Delete(':id')
   deleteIssue(@Param('id') id: string) {
-    return this.issueService.deleteIssue(parseInt(id));
+    return this.IssuesService.deleteIssue(parseInt(id));
   }
 }

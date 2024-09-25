@@ -9,7 +9,14 @@ import { InventariTypeModule } from './inventari_type/inventari_type.module';
 import { IssuesModule } from './issues/issues.module';
 
 @Module({
-  imports: [ClassroomModule, InventariTypeModule, IssuesModule, UsersModule, StatusModule, InventariModule],
+  imports: [
+    ClassroomModule,
+    InventariTypeModule,
+    IssuesModule,
+    UsersModule,
+    StatusModule,
+    InventariModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

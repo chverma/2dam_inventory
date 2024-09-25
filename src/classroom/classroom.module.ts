@@ -6,13 +6,12 @@ Controlador: Define las rutas y las acciones HTTP (GET, POST, PUT, DELETE).
 Servicio: Implementa la lógica de la aplicación (por ejemplo, la lógica para interactuar con la base de datos).
 */
 
-
 import { Module } from '@nestjs/common';
 import { ClassroomController } from './classroom.controller';
 import { ClassroomService } from './classroom.service';
 
 @Module({
   controllers: [ClassroomController],
-  providers: [ClassroomService]
+  providers: [ClassroomService],
 })
 export class ClassroomModule {}
