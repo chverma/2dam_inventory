@@ -4,7 +4,7 @@ import * as path from 'path';
 
 const filePath = path.join(
   path.resolve(__dirname, '..'),
-  'data/inventory_classrooms.json',
+  'data/classroom.json',
 );
 const classroomData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
