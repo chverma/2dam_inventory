@@ -2,6 +2,13 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import * as fs from 'node:fs';
 import * as path from 'path';
 
+import * as convert from 'xml-js';
+
+function convertJsonToXml(json) {
+  const options = { compact: true, ignoreComment: true, spaces: 4 };
+  return convert.json2xml(json, options);
+}
+
 const filePath = path.join(
   path.resolve(__dirname, '..'),
   'data/inventory_issues.json',
@@ -13,8 +20,12 @@ function saveData() {
 }
 @Injectable()
 export class IssuesService {
-  getAllIssues() {
-    return issuesData;
+  getAllIssues(xml: number) {
+    if (xml == 0) {
+      return convertJsonToXml(issuesData);
+    } else {
+      return issuesData;
+    }
   }
 
   createIssue(Issue: any) {

@@ -8,8 +8,10 @@ import {
   HttpStatus,
   HttpException,
   Body,
+  Query,
 } from '@nestjs/common';
 import { IssuesService } from './issues.service';
+
 @Controller('issues')
 export class IssuesController {
   private IssuesService: IssuesService;
@@ -17,9 +19,9 @@ export class IssuesController {
     this.IssuesService = IssuesService;
   }
   @Get()
-  getAllStatus() {
+  getAllStatus(@Query('xml') xml: string) {
     try {
-      return this.IssuesService.getAllIssues();
+      return this.IssuesService.getAllIssues(parseInt(xml));
     } catch (err) {
       throw new HttpException(
         {
