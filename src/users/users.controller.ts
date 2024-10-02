@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 @Controller('Users')
@@ -15,9 +16,9 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  getAllUser() {
+  getAllUser(@Query('xml') xml?: string) {
     try {
-      return this.usersService.getAllUser();
+      return this.usersService.getAllUser(xml);
     } catch (err) {
       throw new HttpException(
         {
