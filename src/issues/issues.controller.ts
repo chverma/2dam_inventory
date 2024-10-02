@@ -19,9 +19,9 @@ export class IssuesController {
     this.IssuesService = IssuesService;
   }
   @Get()
-  getAllStatus(@Query('xml') xml: string) {
+  getAllStatus(@Query('xml') xml?: string) {
     try {
-      return this.IssuesService.getAllIssues(parseInt(xml));
+      return this.IssuesService.getAllIssues(xml);
     } catch (err) {
       throw new HttpException(
         {

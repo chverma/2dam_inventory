@@ -1,7 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import * as fs from 'node:fs';
 import * as path from 'path';
-
 import * as convert from 'xml-js';
 
 function convertJsonToXml(json) {
@@ -20,8 +19,8 @@ function saveData() {
 }
 @Injectable()
 export class IssuesService {
-  getAllIssues(xml: number) {
-    if (xml == 0) {
+  getAllIssues(xml?: string) {
+    if (xml === 'true') {
       return convertJsonToXml(issuesData);
     } else {
       return issuesData;
