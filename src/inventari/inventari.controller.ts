@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { InventariService } from './inventari.service';
 
@@ -18,9 +19,9 @@ export class InventariController {
     this.inventariService = inventariService;
   }
   @Get()
-  getAllInventaris() {
+  getAllInventaris(@Query('xml') xml: string) {
     try {
-      return this.inventariService.getAllInventaris();
+      return this.inventariService.getAllInventaris(xml);
     } catch (err) {
       throw new HttpException(
         {
@@ -35,8 +36,8 @@ export class InventariController {
     }
   }
   @Get(':id')
-  getInventari(@Param('id') id: string) {
-    return this.inventariService.getInventari(parseInt(id));
+  getInventari(@Param('id') id: string, @Query('xml') xml: string) {
+    return this.inventariService.getInventari(parseInt(id), xml);
   }
   @Post()
   createInventari(@Body() Inventari) {
