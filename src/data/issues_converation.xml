@@ -1,0 +1,27 @@
+<issue_converations>
+    <issue_converstion>
+        <id_issue_conversation>1</id_issue_conversation>
+        <id_issue>1</id_issue>
+        <created_at>18/09/2024</created_at>
+        <id_user>1</id_user>
+        <id_tecnic>3</id_tecnic>
+        <notes>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</notes>
+    </issue_converstion>
+    <issue_converstion>
+        <id_issue_conversation>2</id_issue_conversation>
+        <id_issue>1</id_issue>
+        <created_at>18/09/2024</created_at>
+        <id_user>1</id_user>
+        <id_tecnic>3</id_tecnic>
+        <notes>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</notes>
+    </issue_converstion>
+    <issue_converstion>
+        <id_issue_conversation>2</id_issue_conversation>
+        <id_issue>1</id_issue>
+        <created_at>18/09/2024</created_at>
+        <id_user>1</id_user>
+        <id_tecnic>3</id_tecnic>
+        <notes>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</notes>
+    </issue_converstion>
+</issue_converations>
+    

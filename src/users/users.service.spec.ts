@@ -1,12 +1,46 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { User } from './users.entity';
+import { DataSource } from 'typeorm';
+
+// Crea un mock del manager
+const mockManager = {
+  save: jest.fn(),
+};
+
+// Crea un mock del DataSource
+const mockDataSource = {
+  createQueryRunner: jest.fn().mockReturnValue({
+    connect: jest.fn(),
+    startTransaction: jest.fn(),
+    manager: mockManager, // Usa el mock del manager aquí
+    commitTransaction: jest.fn(),
+    rollbackTransaction: jest.fn(),
+    release: jest.fn(),
+  }),
+};
+
+const mockRepository = {
+  find: jest.fn(),
+};
 
 describe('UsersService', () => {
   let service: UsersService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersService],
+      providers: [
+        UsersService,
+        {
+          provide: getRepositoryToken(User),
+          useValue: mockRepository,
+        },
+        {
+          provide: DataSource, // Proporciona el mock del DataSource
+          useValue: mockDataSource,
+        },
+      ],
     }).compile();
 
     service = module.get<UsersService>(UsersService);
@@ -15,65 +49,22 @@ describe('UsersService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
-});
 
-interface User {
-  id_user: number;
-  name: string;
-  username: string;
-  email: string;
-  role: number;
-}
+  describe('createUser', () => {
+    it('should save a user', async () => {
+      const user = {
+        id: 1,
+        firstName: 'John',
+        surname: 'Doe',
+        email: 'sergi@gmail.com',
+        role: 1,
+      };
+      mockManager.save.mockResolvedValue(user); // Simula que se guarda el usuario
 
-interface UserRequest {
-  users: User[];
-}
+      const result = await service.createUser(user);
 
-const headersList: HeadersInit = {
-  Accept: '*/*',
-  'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
-  'Content-Type': 'application/json',
-};
-
-const bodyContent: UserRequest = {
-  users: [
-    {
-      id_user: 1,
-      name: 'Federico',
-      username: 'Gonzalez',
-      email: 'federico@gmail.com',
-      role: 0,
-    },
-    {
-      id_user: 2,
-      name: 'Gonzalo',
-      username: 'Martinez',
-      email: 'gonzalo@gmail.com',
-      role: 1,
-    },
-    {
-      id_user: 3,
-      name: 'Gustavo',
-      username: 'Messi',
-      email: 'gustavo@gmail.com',
-      role: 1,
-    },
-  ],
-};
-
-const makeRequest = async () => {
-  try {
-    const response = await fetch('http://localhost:3000/users/', {
-      method: 'POST',
-      body: JSON.stringify(bodyContent),
-      headers: headersList,
+      expect(mockManager.save).toHaveBeenCalledWith(user); // Verifica que se llamó al método con el usuario correcto
+      expect(result).toEqual(user); // Verifica el resultado
     });
-
-    const data = await response.text();
-    console.log(data);
-  } catch (error) {
-    console.error('Error en la solicitud:', error);
-  }
-};
-
-makeRequest();
+  });
+});

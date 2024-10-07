@@ -1,53 +1,53 @@
 import {
   Body,
   Controller,
-  Delete,
-  Get,
+  //Delete,
+  //Get,
   HttpException,
   HttpStatus,
   Param,
-  Post,
+  //Post,
   Put,
-  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { User } from './users.entity';
 @Controller('Users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get()
-  getAllUser(@Query('xml') xml?: string) {
-    try {
-      return this.usersService.getAllUser(xml);
-    } catch (err) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: err,
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        {
-          cause: err,
-        },
-      );
-    }
-  }
-  @Get(':id')
-  getUser(@Param('id') id: string, @Query('xml') xml?: string) {
-    const userId = parseInt(id);
-    if (isNaN(userId)) {
-      throw new HttpException('Invalid user ID', HttpStatus.BAD_REQUEST);
-    }
-    return this.usersService.getUser(userId, xml);
-  }
+  // @Get()
+  // getAllUser() {
+  //   try {
+  //     return this.usersService.getAllUser();
+  //   } catch (err) {
+  //     throw new HttpException(
+  //       {
+  //         status: HttpStatus.INTERNAL_SERVER_ERROR,
+  //         error: err,
+  //       },
+  //       HttpStatus.INTERNAL_SERVER_ERROR,
+  //       {
+  //         cause: err,
+  //       },
+  //     );
+  //   }
+  // }
+  // @Get(':id')
+  // getUser(@Param('id') id: string) {
+  //   const userId = parseInt(id);
+  //   if (isNaN(userId)) {
+  //     throw new HttpException('Invalid user ID', HttpStatus.BAD_REQUEST);
+  //   }
+  //   return this.usersService.getUser(userId);
+  // }
 
-  @Post()
-  createUser(@Body() Users: any) {
-    return this.usersService.createUser(Users);
-  }
+  // @Post()
+  // createUser(@Body() Users: any) {
+  //   return this.usersService.createUser(Users);
+  // }
 
   @Put(':id')
-  updateUser(@Param('id') id: string, @Body() Users: any) {
+  updateUser(@Param('id') id: string, @Body() Users: User) {
     const userId = parseInt(id);
     if (isNaN(userId)) {
       throw new HttpException('Invalid user ID', HttpStatus.BAD_REQUEST);
@@ -58,12 +58,12 @@ export class UsersController {
     });
   }
 
-  @Delete(':id')
-  deleteUser(@Param('id') id: string) {
-    const userId = parseInt(id);
-    if (isNaN(userId)) {
-      throw new HttpException('Invalid user ID', HttpStatus.BAD_REQUEST);
-    }
-    return this.usersService.deleteUser(userId);
-  }
+  // @Delete(':id')
+  // deleteUser(@Param('id') id: string) {
+  //   const userId = parseInt(id);
+  //   if (isNaN(userId)) {
+  //     throw new HttpException('Invalid user ID', HttpStatus.BAD_REQUEST);
+  //   }
+  //   return this.usersService.deleteUser(userId);
+  // }
 }
