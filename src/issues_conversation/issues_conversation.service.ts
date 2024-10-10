@@ -1,56 +1,79 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { default as IssuesConversationData } from '../data/issues_conversation';
-import { UtilsService } from 'src/utils/utils.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { IssueConversationEntity } from './issues_conversation.entity';
 import { CreateIssueConversationDto } from './issues_conversation.dto';
-
+import * as convert from 'xml-js';
 @Injectable()
 export class IssueConversationService {
-  constructor(private readonly utilsService: UtilsService) {}
-  private currentId = IssuesConversationData.length;
+  constructor(
+    @InjectRepository(IssueConversationEntity)
+    private readonly issueConversationRepository: Repository<IssueConversationEntity>,
+  ) {}
 
-  getIssueConversation(id: number, xml?: string) {
-    // Filtrar las conversaciones que coinciden con el id de la issue
-    const conversations = IssuesConversationData.filter(
-      (conversation) => conversation.id_issue === id,
-    );
+  async getConversationsByIssueId(issueId: number, xml: string) {
+    const conversations = await this.issueConversationRepository.find({
+      where: { id_issue: { id: issueId } },
+      relations: ['user'], //posiblemente no sea necesario
+      order: { create_at: 'ASC' },
+    });
 
     if (conversations.length === 0) {
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('No conversations found', HttpStatus.NOT_FOUND);
     }
 
-    // Si se solicita en formato XML
     if (xml === 'true') {
-      const jsonFormatted = JSON.stringify({ Conversations: conversations });
-      return this.utilsService.convertJSONtoXML(jsonFormatted);
+      const jsonFormatted = { issue_conversations: conversations };
+      const json = JSON.stringify(jsonFormatted);
+      const options = { compact: true, ignoreComment: true, spaces: 4 };
+      return convert.json2xml(json, options);
     }
 
-    return { Conversations: conversations };
+    return { conversations };
   }
 
-  addIssueConversation(dto: CreateIssueConversationDto) {
-    //creacion de id y fecha automaticas
-    const newId = IssuesConversationData.length + 1;
-    const createdAt = new Date().toISOString();
+  async addIssueConversation(dto: CreateIssueConversationDto) {
+    // if (!dto.userId && !dto.tecnicId) {
+    //   throw new HttpException(
+    //     'Debe registrarse para poder escribir una nota',
+    //     HttpStatus.BAD_REQUEST,
+    //   );
+    // }
 
-    // Comprobar que al menos uno de los IDs esté presente
-    if (!dto.userId && !dto.tecnicId) {
+    // Crear la nueva conversación
+    const newConversation = this.issueConversationRepository.create({
+      id_issue: { id: dto.id_issue },
+      user: { id: dto.userId },
+      notes: dto.notes,
+      create_at: new Date(),
+    });
+
+    return this.issueConversationRepository.save(newConversation);
+  }
+
+  // Método para eliminar una conversación por su id
+  async deleteIssueConversation(id: number) {
+    const result = await this.issueConversationRepository.delete({ id });
+    if (result.affected === 0) {
+      throw new HttpException('Conversation not found', HttpStatus.NOT_FOUND);
+    }
+    return { message: 'Conversacion eliminada' };
+  }
+
+  // Método para actualizar una conversación por su id
+  async updateIssueConversation(id: number, notes: string) {
+    const conversation = await this.issueConversationRepository.findOneBy({
+      id,
+    });
+
+    if (!conversation) {
       throw new HttpException(
-        'Debe registrarse para poder escribir una nota',
-        HttpStatus.BAD_REQUEST,
+        'Conversacion no encontrada',
+        HttpStatus.NOT_FOUND,
       );
     }
 
-    // Crear el objeto de la nueva conversación
-    const newConversation = {
-      id_issue_conversation: newId,
-      id_issue: dto.id_issue,
-      created_at: createdAt,
-      id_user: dto.userId || null,
-      id_tecnic: dto.tecnicId || null,
-      notes: dto.notes,
-    };
-
-    IssuesConversationData.push(newConversation); // Agregar la nueva conversación a la lista
-    return newConversation;
+    conversation.notes = notes;
+    return this.issueConversationRepository.save(conversation);
   }
 }

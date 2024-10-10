@@ -4,9 +4,11 @@ import {
   HttpException,
   HttpStatus,
   Param,
-  Query,
   Body,
   Post,
+  Delete,
+  Put,
+  Query,
 } from '@nestjs/common';
 import { IssueConversationService } from './issues_conversation.service';
 import { CreateIssueConversationDto } from './issues_conversation.dto';
@@ -18,30 +20,67 @@ export class IssueConversationController {
   ) {}
 
   @Get(':id')
-  getIssueConversation(@Param('id') id: string, @Query('xml') xml?: string) {
+  async getIssueConversation(
+    @Param('id') id: string,
+    @Query('xml') xml: string,
+  ) {
     const issueConversationId = parseInt(id);
     if (isNaN(issueConversationId)) {
       throw new HttpException('Invalid issue ID', HttpStatus.BAD_REQUEST);
     }
-    return this.issueConversationService.getIssueConversation(
-      issueConversationId,
-      xml,
-    );
+
+    const conversations =
+      await this.issueConversationService.getConversationsByIssueId(
+        issueConversationId,
+        xml,
+      );
+
+    return conversations;
   }
 
   @Post()
-  postIssueConversation(
+  createIssueConversation(
     @Body() createIssueConversationDto: CreateIssueConversationDto,
   ) {
-    const { id_issue, notes } = createIssueConversationDto;
-
-    // Validar que el id_issue y notes están presentes
-    if (!id_issue || !notes) {
-      throw new HttpException('Invalid data', HttpStatus.BAD_REQUEST);
-    }
-
     return this.issueConversationService.addIssueConversation(
       createIssueConversationDto,
+    );
+  }
+
+  @Delete(':id')
+  deleteIssueConversation(@Param('id') id: string) {
+    const conversationId = parseInt(id);
+    if (isNaN(conversationId)) {
+      throw new HttpException(
+        'Invalid conversation ID',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return this.issueConversationService.deleteIssueConversation(
+      conversationId,
+    );
+  }
+
+  @Put(':id')
+  updateIssueConversation(
+    @Param('id') id: string,
+    @Body('notes') notes: string,
+  ) {
+    const conversationId = parseInt(id);
+    if (isNaN(conversationId)) {
+      throw new HttpException(
+        'Invalid conversation ID',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (!notes) {
+      throw new HttpException('Notes cannot be empty', HttpStatus.BAD_REQUEST);
+    }
+
+    return this.issueConversationService.updateIssueConversation(
+      conversationId,
+      notes,
     );
   }
 }
