@@ -1,5 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { IssueConversationEntity } from 'src/issues_conversation/issues_conversation.entity';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -17,10 +17,9 @@ export class User {
   @Column({ default: 0 })
   role: number;
 
-  /*como un usuario puede o no tener muchas issues, 
-  deberiamos hacer un OneToMony a issues, igual que 
-  deberiamos hacerlo desde issues a issues_conversations.
-  */
-  //OneToMany(type => Issue, issue.user)
-  //issue: Issue[];
+  @OneToMany(
+    () => IssueConversationEntity,
+    (issueConversation) => issueConversation.user,
+  )
+  issueConversations: IssueConversationEntity[];
 }
