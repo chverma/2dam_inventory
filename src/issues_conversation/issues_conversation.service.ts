@@ -3,10 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { IssueConversationEntity } from './issues_conversation.entity';
 import { CreateIssueConversationDto } from './issues_conversation.dto';
-import * as convert from 'xml-js';
+import { UtilsService } from 'src/utils/utils.service';
 @Injectable()
 export class IssueConversationService {
   constructor(
+    private readonly utilsService: UtilsService,
     @InjectRepository(IssueConversationEntity)
     private readonly issueConversationRepository: Repository<IssueConversationEntity>,
   ) {}
@@ -23,13 +24,14 @@ export class IssueConversationService {
     }
 
     if (xml === 'true') {
-      const jsonFormatted = { issue_conversations: conversations };
-      const json = JSON.stringify(jsonFormatted);
-      const options = { compact: true, ignoreComment: true, spaces: 4 };
-      return convert.json2xml(json, options);
+      const jsonformatted = JSON.stringify({
+        IssuesConversations: this.issueConversationRepository.find(),
+      });
+      const xmlResult = this.utilsService.convertJSONtoXML(jsonformatted);
+      return xmlResult;
+    } else {
+      return { conversations };
     }
-
-    return { conversations };
   }
 
   async addIssueConversation(dto: CreateIssueConversationDto) {
