@@ -1,62 +1,61 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { default as statusData } from '../data/inventory_status';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { UtilsService } from 'src/utils/utils.service';
+import { Status } from './status.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
 @Injectable()
 export class StatusService {
-  constructor(private readonly UtilsService: UtilsService) {}
-  getAllStatus(xml: string) {
+  constructor(
+    private readonly UtilsService: UtilsService,
+    @InjectRepository(Status) private statusRepository: Repository<Status>,
+  ) {}
+
+  async getAllStatus(xml: string): Promise<Status[] | string> {
+    const allStatus = await this.statusRepository.find();
     if (xml === 'true') {
-      const jsonForXml = JSON.stringify({ status: statusData });
+      const jsonForXml = JSON.stringify({ Status: allStatus });
       return this.UtilsService.convertJSONtoXML(jsonForXml);
     }
-    return statusData;
+    return allStatus;
   }
 
-  createStatus(Status: any) {
-    statusData.push({
-      id_status: statusData[statusData.length - 1].id_status + 1,
-      ...Status,
-    });
-    return { message: 'Estado creado satisfactoriamente' };
+  async createStatus(status: any): Promise<{ message: string }> {
+    const newStatus = this.statusRepository.create(status);
+    await this.statusRepository.save(newStatus);
+    return { message: 'Status creado con éxito' };
   }
 
-  getStatus(id: number, xml: string) {
-    let i = 0;
-    while (i < statusData.length && statusData[i].id_status != id) {
-      i++;
-    }
-    if (i >= statusData.length) {
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-    }
-    if (xml === 'true') {
-      const jsonForXml = JSON.stringify({ status: statusData[i] });
-      return this.UtilsService.convertJSONtoXML(jsonForXml);
+  async getStatus(id: number, xml: string): Promise<Status | string> {
+    const status = await this.statusRepository.findOneBy({ id_status: id });
+    if (status) {
+      if (xml === 'true') {
+        const jsonForXml = JSON.stringify({ Status: status });
+        return this.UtilsService.convertJSONtoXML(jsonForXml);
+      }
+      return status;
     } else {
-      return statusData[i];
+      throw new HttpException('No encontrado', HttpStatus.NOT_FOUND);
     }
   }
 
-  updateStatus(StatusUpdated) {
-    let i = 0;
-    while (
-      i < statusData.length &&
-      statusData[i].id_status != StatusUpdated.id_status
-    ) {
-      i++;
+  async updateStatus(statusUpdated: Status): Promise<Status> {
+    const existingStatus = await this.statusRepository.findOneBy({
+      id_status: statusUpdated.id_status,
+    });
+    if (!existingStatus) {
+      throw new HttpException('Status no encontrado', HttpStatus.NOT_FOUND);
     }
-    if (statusData[i]) {
-      statusData[i] = StatusUpdated;
-      return statusData[i];
-    } else throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+    await this.statusRepository.update(statusUpdated.id_status, statusUpdated);
+    return await this.statusRepository.findOneBy({
+      id_status: statusUpdated.id_status,
+    });
   }
 
-  deleteStatus(id: number) {
-    let i = 0;
-    while (i < statusData.length && statusData[i].id_status != id) {
-      i++;
+  async deleteStatus(id: number): Promise<void> {
+    const result = await this.statusRepository.delete(id);
+    if (result.affected === 0) {
+      throw new HttpException('No encontrado', HttpStatus.NOT_FOUND);
     }
-    if (statusData[i]) {
-      return statusData.splice(i, 1);
-    } else throw new HttpException('Not found', HttpStatus.NOT_FOUND);
   }
 }
