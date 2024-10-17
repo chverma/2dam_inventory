@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { UtilsService } from 'src/utils/utils.service';
+import { UtilsService } from '../utils/utils.service';
 import { User } from './users.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -12,12 +12,12 @@ export class UsersService {
   ) {}
 
   async getAllUser(xml?: string): Promise<User[] | string> {
-    if (xml === 'true') {
+    if (xml == 'true') {
       const jsonformatted = JSON.stringify({
-        Users: this.usersRepository.find(),
+        Users: await this.usersRepository.find(),
       });
       const xmlResult = this.utilsService.convertJSONtoXML(jsonformatted);
-      return await xmlResult;
+      return xmlResult;
     } else {
       return this.usersRepository.find();
     }
@@ -29,12 +29,12 @@ export class UsersService {
   }
 
   async getUser(id_user: number, xml?: string): Promise<User | string | null> {
-    const user = this.usersRepository.findOneBy({ id_user });
+    const user = await this.usersRepository.findOneBy({ id_user });
 
     if (user != null) {
-      if (xml === 'true') {
+      if (xml == 'true') {
         const jsonformatted = JSON.stringify(user);
-        return await this.utilsService.convertJSONtoXML(jsonformatted);
+        return this.utilsService.convertJSONtoXML(jsonformatted);
       } else {
         return user;
       }

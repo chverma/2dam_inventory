@@ -1,5 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn /*OneToMany*/ } from 'typeorm';
-//import { IssueConversationEntity } from '../issues_conversation/issues_conversation.entity';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
+import { IssueConversationEntity } from '../issues_conversation/issues_conversation.entity';
+import { Issue } from 'src/issues/issues.entity';
 
 @Entity()
 export class User {
@@ -18,9 +25,15 @@ export class User {
   @Column({ default: 0 })
   role: number;
 
-  /*@OneToMany(
+  @OneToMany(
     () => IssueConversationEntity,
     (issueConversation) => issueConversation.user,
   )
-  issueConversations: IssueConversationEntity[];*/
+  @JoinColumn()
+  issueConversations: IssueConversationEntity[];
+  @OneToMany(() => Issue, (issue) => issue.user)
+  issues: Issue[];
+
+  @OneToMany(() => Issue, (issue) => issue.technician)
+  assignedIssues: Issue[];
 }
