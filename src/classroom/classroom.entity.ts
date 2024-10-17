@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Inventari } from 'src/inventari/inventari.entity';
+import { Entity, Column, PrimaryGeneratedColumn,  OneToMany } from 'typeorm';
 
 @Entity()
 export class Classroom {
@@ -7,4 +8,7 @@ export class Classroom {
 
   @Column()
   description: string;
+
+  @OneToMany(() => Inventari, fk_inventari => fk_inventari.fk_classroom)
+  fk_inventari: Inventari[];
 }

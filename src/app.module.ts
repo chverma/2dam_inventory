@@ -43,6 +43,7 @@ import { IssueConversationEntity } from './issues_conversation/issues_conversati
           Inventari_type,
           IssueConversationEntity,
           User,
+          Inventari,
         ],
         synchronize: true,
       }),
