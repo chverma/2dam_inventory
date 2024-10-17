@@ -47,7 +47,7 @@ export class Issue {
   @JoinColumn({ name: 'id_status' })
   status: Status;
 
-  @OneToOne(() => Inventari, (inventari) => inventari.issue)
+  @OneToOne(() => Inventari, (fk_inventari) => fk_inventari.fk_issue)
   @JoinColumn({ name: 'id_inventory' })
-  inventari: Inventari;
+  fk_inventari: Inventari;
 }
