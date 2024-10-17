@@ -1,5 +1,16 @@
 import { IssueConversationEntity } from 'src/issues_conversation/issues_conversation.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { User } from '../users/users.entity';
+import { Status } from '../status/status.entity';
+import { Inventari } from '../inventari/inventari.entity';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  ManyToOne,
+  JoinColumn,
+  OneToOne,
+} from 'typeorm';
 
 @Entity()
 export class Issue {
@@ -7,22 +18,10 @@ export class Issue {
   id_issue: number;
 
   @Column()
-  id_inventory: number;
-
-  @Column()
   created_at: string;
 
   @Column('text')
   description: string;
-
-  @Column()
-  id_status: number;
-
-  @Column()
-  id_user: number;
-
-  @Column()
-  id_tecnic: number;
 
   @Column()
   last_updated: string;
@@ -35,4 +34,20 @@ export class Issue {
     (issueConversation) => issueConversation.issue,
   )
   conversations: IssueConversationEntity[];
+
+  @ManyToOne(() => User, (user) => user.issues)
+  @JoinColumn({ name: 'id_user' })
+  user: User;
+
+  @ManyToOne(() => User, (user) => user.assignedIssues)
+  @JoinColumn({ name: 'id_tecnic' })
+  technician: User;
+
+  @ManyToOne(() => Status, (status) => status.issues)
+  @JoinColumn({ name: 'id_status' })
+  status: Status;
+
+  @OneToOne(() => Inventari, (inventari) => inventari.issue)
+  @JoinColumn({ name: 'id_inventory' })
+  inventari: Inventari;
 }
