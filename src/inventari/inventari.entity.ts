@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   OneToOne,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity()
@@ -16,9 +17,6 @@ export class Inventari {
 
   @Column()
   num_serie: string;
-
-  @Column()
-  id_type: number;
 
   @Column()
   brand: string;
@@ -35,18 +33,17 @@ export class Inventari {
   @Column()
   status: string;
 
-  @Column()
-  id_classroom: number;
-
   @ManyToOne(
     () => Inventari_type,
     (fk_inventary_type) => fk_inventary_type.fk_inventari,
   )
+  @JoinColumn({ name: 'id_inventory_type' })
   fk_inventary_type: Inventari_type;
 
   @OneToOne(() => Issue, (fk_issue) => fk_issue.fk_inventari)
   fk_issue: Issue;
 
   @ManyToOne(() => Classroom, (fk_classroom) => fk_classroom.fk_inventari)
+  @JoinColumn({ name: 'id_classroom' })
   fk_classroom: Classroom;
 }

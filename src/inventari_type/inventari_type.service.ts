@@ -23,9 +23,9 @@ export class InventariTypeService {
     return inventariTypes;
   }
 
-  async getInventariType(id: number, format?: string): Promise<any> {
+  async getInventariType(id_type: number, format?: string): Promise<any> {
     const inventariType = await this.inventariTypeRepository.findOne({
-      where: { id },
+      where: { id_type },
     });
 
     if (!inventariType) {
@@ -52,11 +52,11 @@ export class InventariTypeService {
   }
 
   async updateInventariType(
-    id: number,
+    id_type: number,
     inventariTypeUpdated: Partial<Inventari_type>,
   ): Promise<Inventari_type> {
     const inventariType = await this.inventariTypeRepository.findOne({
-      where: { id },
+      where: { id_type },
     });
 
     if (!inventariType) {
@@ -66,13 +66,13 @@ export class InventariTypeService {
       );
     }
 
-    await this.inventariTypeRepository.update(id, inventariTypeUpdated);
+    await this.inventariTypeRepository.update(id_type, inventariTypeUpdated);
 
-    return this.inventariTypeRepository.findOne({ where: { id } });
+    return this.inventariTypeRepository.findOne({ where: { id_type } });
   }
 
-  async deleteInventariType(id: number): Promise<{ message: string }> {
-    const result = await this.inventariTypeRepository.delete(id);
+  async deleteInventariType(id_type: number): Promise<{ message: string }> {
+    const result = await this.inventariTypeRepository.delete(id_type);
 
     if (result.affected === 0) {
       throw new HttpException(

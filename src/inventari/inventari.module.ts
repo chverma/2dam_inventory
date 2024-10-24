@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { InventariController } from './inventari.controller';
 import { InventariService } from './inventari.service';
 import { Inventari } from './inventari.entity';
-import { UtilsModule } from '../utils/utils.module';
+import { UtilsModule } from 'src/utils/utils.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({

@@ -49,7 +49,7 @@ describe('UsersService', () => {
   const MockUsersRepository = {
     find: jest.fn(() => usersArray),
     findOneBy: jest.fn(() => oneUser),
-    create: jest.fn(() => oneUser),
+    create: jest.fn(),
     findOne: jest.fn(() => oneUser),
     delete: jest.fn(),
     save: jest.fn(() => mergeUser),
@@ -77,14 +77,13 @@ describe('UsersService', () => {
   describe('createUser', () => {
     it('should create a new user', async () => {
       const mockUser = {
-        id_user: 1,
         name: 'Federico',
         surname: 'Gonzalez',
         email: 'federico@gmail.com',
         role: 0,
       };
-      const result = await userService.createUser(mockUser);
-      expect(result).toEqual(mockUser);
+      await userService.createUser(mockUser);
+      expect(MockUsersRepository.create).toHaveBeenCalledWith(mockUser);
     });
   });
   describe('getAllUser', () => {
