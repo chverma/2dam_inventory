@@ -6,24 +6,20 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 
 const statusArray = [
   {
-    id_status: 1,
     description: 'Eliminada',
     issues: [],
   },
   {
-    id_status: 2,
     description: 'Creada',
     issues: [],
   },
   {
-    id_status: 2,
     description: 'Creada',
     issues: [],
   },
 ];
 
 const oneStatus = {
-  id_status: 1,
   description: 'Eliminada',
   issues: [],
 };
@@ -87,7 +83,9 @@ describe('StatusService', () => {
 
   describe('createStatus', () => {
     it('should create a new status', async () => {
-      const newStatus = { id_status: 3, description: 'En progreso' };
+      const newStatus = {
+        description: 'En progreso',
+      };
       const result = await statusService.createStatus(newStatus);
       expect(result).toEqual({ message: 'Status creado con éxito' });
       expect(MockStatusRepository.create).toHaveBeenCalledWith(newStatus);

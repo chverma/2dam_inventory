@@ -25,7 +25,7 @@ export class InventariTypeService {
 
   async getInventariType(id_type: number, format?: string): Promise<any> {
     const inventariType = await this.inventariTypeRepository.findOne({
-      where: { id_type },
+      where: { id_type: id_type },
     });
 
     if (!inventariType) {
@@ -56,7 +56,7 @@ export class InventariTypeService {
     inventariTypeUpdated: Partial<Inventari_type>,
   ): Promise<Inventari_type> {
     const inventariType = await this.inventariTypeRepository.findOne({
-      where: { id_type },
+      where: { id_type: id_type },
     });
 
     if (!inventariType) {
@@ -68,7 +68,7 @@ export class InventariTypeService {
 
     await this.inventariTypeRepository.update(id_type, inventariTypeUpdated);
 
-    return this.inventariTypeRepository.findOne({ where: { id_type } });
+    return this.inventariTypeRepository.findOne({ where: { id_type: id_type } });
   }
 
   async deleteInventariType(id_type: number): Promise<{ message: string }> {

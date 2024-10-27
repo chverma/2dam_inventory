@@ -18,6 +18,13 @@ export class IssueConversationController {
     private readonly issueConversationService: IssueConversationService,
   ) {}
 
+  @Get()
+  async getAllIssueConversation(@Query('xml') xml: string) {
+    const conversations =
+      await this.issueConversationService.getAllIssueConversation(xml);
+    return conversations;
+  }
+
   @Get(':id')
   async getIssueConversation(
     @Param('id') id: string,

@@ -13,8 +13,8 @@ const oneInventari: Inventari = {
   GVA_description_cod_articulo: 'Descripción del artículo A',
   status: 'disponible',
   fk_inventary_type: {
-    id: 1,
-    descripcion: 'Tipo A',
+    id_type: 1,
+    description: 'Tipo A',
     fk_inventari: null,
   },
   fk_classroom: {
@@ -34,8 +34,8 @@ const mockInventariUpdate: Inventari = {
   GVA_description_cod_articulo: 'Descripción del artículo A',
   status: 'disponible',
   fk_inventary_type: {
-    id: 1,
-    descripcion: 'Tipo A',
+    id_type: 1,
+    description: 'Tipo A',
     fk_inventari: null,
   },
   fk_classroom: {

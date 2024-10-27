@@ -11,6 +11,24 @@ export class IssueConversationService {
     private readonly issueConversationRepository: Repository<IssueConversationEntity>,
   ) {}
 
+  async getAllIssueConversation(xml?: string) {
+    const conversations = await this.issueConversationRepository.find();
+
+    if (conversations.length === 0) {
+      throw new HttpException('No conversations found', HttpStatus.NOT_FOUND);
+    }
+
+    if (xml === 'true') {
+      const jsonformatted = JSON.stringify({
+        IssuesConversations: this.issueConversationRepository.find(),
+      });
+      const xmlResult = this.utilsService.convertJSONtoXML(jsonformatted);
+      return xmlResult;
+    } else {
+      return { conversations };
+    }
+  }
+
   async getIssueConversation(id_issue: number, xml?: string) {
     const conversations = await this.issueConversationRepository.find({
       where: {
@@ -51,7 +69,7 @@ export class IssueConversationService {
       create_at: new Date(),
     });
 
-    return newConversation;
+    return this.issueConversationRepository.save(newConversation);
   }
 
   async deleteIssueConversation(id_conversation: number) {
