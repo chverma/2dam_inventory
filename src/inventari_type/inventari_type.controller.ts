@@ -7,64 +7,50 @@ import {
   Post,
   Put,
   Query,
-  Res,
 } from '@nestjs/common';
 import { InventariTypeService } from './inventari_type.service';
-import { Response } from 'express';
+import { CreateInventariTypeDto, UpdateInventariTypeDto } from './inventari_type.dto';
 
 @Controller('inventari_type')
 export class InventariTypeController {
   constructor(private readonly inventariTypeService: InventariTypeService) {}
 
   @Get()
-  async getAllInventariType(
-    @Query('format') format?: string,
-    @Res() res?: Response,
-  ) {
+  async getAllInventariType(@Query('format') format?: string) {
     const data = await this.inventariTypeService.getAllInventariType(format);
-
-    if (format === 'xml' && res) {
-      res.set('Content-Type', 'application/xml');
-      return res.send(data);
-    }
-
-    return res ? res.json(data) : data;
+    return data;
   }
 
   @Get(':id')
   async getInventariType(
     @Param('id') id: string,
     @Query('format') format?: string,
-    @Res() res?: Response,
   ) {
     const data = await this.inventariTypeService.getInventariType(
       parseInt(id),
       format,
     );
-
-    if (format === 'xml' && res) {
-      res.set('Content-Type', 'application/xml');
-      return res.send(data);
-    }
-
-    return res ? res.json(data) : data;
+    return data;
   }
 
   @Post()
-  createInventariType(@Body() inventari_type) {
-    return this.inventariTypeService.createInventariType(inventari_type);
+  async createInventariType(@Body() createInventariTypeDto: CreateInventariTypeDto) {
+    return this.inventariTypeService.createInventariType(createInventariTypeDto);
   }
 
   @Put(':id')
-  updateInventariType(@Param('id') id: string, @Body() inventari_type) {
+  async updateInventariType(
+    @Param('id') id: string,
+    @Body() updateInventariTypeDto: UpdateInventariTypeDto,
+  ) {
     return this.inventariTypeService.updateInventariType(
       parseInt(id),
-      inventari_type,
+      updateInventariTypeDto,
     );
   }
 
   @Delete(':id')
-  deleteInventariType(@Param('id') id: string) {
+  async deleteInventariType(@Param('id') id: string) {
     return this.inventariTypeService.deleteInventariType(parseInt(id));
   }
 }

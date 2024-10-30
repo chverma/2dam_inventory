@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Inventari_type } from './inventari_type.entity';
 import { UtilsService } from '../utils/utils.service';
+import { CreateInventariTypeDto, UpdateInventariTypeDto } from './inventari_type.dto';
+
 
 @Injectable()
 export class InventariTypeService {
@@ -42,18 +44,20 @@ export class InventariTypeService {
 
     return inventariType;
   }
+
   async createInventariType(
-    inventari_type: Partial<Inventari_type>,
+    createInventariTypeDto: CreateInventariTypeDto,
   ): Promise<{ message: string }> {
-    const newInventariType =
-      this.inventariTypeRepository.create(inventari_type);
+    const newInventariType = this.inventariTypeRepository.create(
+      createInventariTypeDto,
+    );
     await this.inventariTypeRepository.save(newInventariType);
     return { message: 'Tipo de inventario creado satisfactoriamente' };
   }
 
   async updateInventariType(
     id_type: number,
-    inventariTypeUpdated: Partial<Inventari_type>,
+    updateInventariTypeDto: UpdateInventariTypeDto,
   ): Promise<Inventari_type> {
     const inventariType = await this.inventariTypeRepository.findOne({
       where: { id_type },
@@ -66,7 +70,7 @@ export class InventariTypeService {
       );
     }
 
-    await this.inventariTypeRepository.update(id_type, inventariTypeUpdated);
+    await this.inventariTypeRepository.update(id_type, updateInventariTypeDto);
 
     return this.inventariTypeRepository.findOne({ where: { id_type } });
   }
