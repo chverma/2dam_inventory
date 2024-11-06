@@ -11,6 +11,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { IssuesService } from './issues.service';
+import { CreateIssueDto, UpdateIssueDto } from './issues.dto';
 
 @Controller('issues')
 export class IssuesController {
@@ -37,7 +38,7 @@ export class IssuesController {
   }
 
   @Post()
-  createIssue(@Body() Issue) {
+  createIssue(@Body() Issue: CreateIssueDto) {
     return this.IssuesService.createIssue(Issue);
   }
 
@@ -47,7 +48,7 @@ export class IssuesController {
   }
 
   @Put(':id')
-  updateIssue(@Param('id') id: string, @Body() Issue) {
+  updateIssue(@Param('id') id: string, @Body() Issue: UpdateIssueDto) {
     return this.IssuesService.updateIssue(parseInt(id), Issue);
   }
 
