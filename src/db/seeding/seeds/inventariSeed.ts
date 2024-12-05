@@ -30,6 +30,7 @@ export class InventariSeeder implements Seeder {
           num_serie: item.num_serie,
           brand: item.brand,
           model: item.model,
+          GVA_id_glpi: item.GVA_id_glpi,
           GVA_cod_article: item.GVA_cod_article,
           GVA_description_cod_articulo: item.GVA_description_cod_articulo,
           status: item.status,

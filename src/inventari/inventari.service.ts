@@ -5,6 +5,7 @@ import { Inventari } from './inventari.entity';
 import { UtilsService } from '../utils/utils.service';
 import { CreateInventariDto, UpdateInventariDto } from './inventari.dto';
 import { LabelsService } from 'src/utils/labels.service';
+import { Readable } from 'stream';
 
 @Injectable()
 export class InventariService {
@@ -118,5 +119,51 @@ export class InventariService {
         HttpStatus.NOT_FOUND,
       );
     }
+  }
+
+  async processCsvStream(fileBuffer: Buffer): Promise<any[]> {
+    const stream = new Readable();
+    stream.push(fileBuffer);
+    stream.push(null);
+
+    const rows = [];
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const parser = require('csv-parser');
+
+    await new Promise<void>((resolve, reject) => {
+      stream
+        .pipe(parser({ separator: ';' }))
+        .on('data', (data) => rows.push(data))
+        .on('end', resolve)
+        .on('error', reject);
+    });
+
+    const matches = [];
+
+    for (const row of rows) {
+      const numSerie = row['Número de serie'];
+
+      const inventoryItem = await this.inventariRepository.findOneBy({
+        num_serie: numSerie,
+      });
+
+      if (inventoryItem) {
+        inventoryItem.GVA_cod_article = row['GVA - Codi Article'];
+        inventoryItem.GVA_id_glpi = parseInt(row['GVA_id_glpi'], 10);
+        inventoryItem.GVA_description_cod_articulo =
+          row['GVA - Descripció Codi Article'];
+
+        await this.inventariRepository.save(inventoryItem);
+
+        matches.push(inventoryItem);
+      } else {
+        console.log(
+          `No se encontró coincidencia para Número de serie: ${numSerie}`,
+        );
+      }
+    }
+
+    console.log('Actualizaciones realizadas en las coincidencias:', matches);
+    return matches;
   }
 }

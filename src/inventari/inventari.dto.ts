@@ -11,7 +11,10 @@ export class CreateInventariDto {
   model: string;
 
   @IsInt()
-  GVA_cod_article: number;
+  GVA_id_glpi: number;
+
+  @IsInt()
+  GVA_cod_article: string;
 
   @IsString()
   GVA_description_cod_articulo: string;
@@ -43,7 +46,11 @@ export class UpdateInventariDto {
 
   @IsOptional()
   @IsInt()
-  GVA_cod_article?: number;
+  GVA_id_glpi?: number;
+
+  @IsOptional()
+  @IsString()
+  GVA_cod_article?: string;
 
   @IsOptional()
   @IsString()

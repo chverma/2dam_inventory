@@ -25,7 +25,10 @@ export class Inventari {
   model: string;
 
   @Column()
-  GVA_cod_article: number;
+  GVA_id_glpi: number;
+
+  @Column()
+  GVA_cod_article: string;
 
   @Column()
   GVA_description_cod_articulo: string;
