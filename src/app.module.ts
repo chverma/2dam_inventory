@@ -37,6 +37,7 @@ import { MongooseModule } from '@nestjs/mongoose';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('MONGODB_URI'),
+        serverSelectionTimeoutMS: 30000,
       }),
       inject: [ConfigService],
     }),

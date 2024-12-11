@@ -12,17 +12,25 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { FilesService } from './files.service';
 import { FileResponseVm } from './view-models/file-response-vm.model';
+import { InventariService } from 'src/inventari/inventari.service';
 
 @Controller('/files')
 export class FilesController {
-  constructor(private filesService: FilesService) {}
+  constructor(
+    private readonly filesService: FilesService,
+    private readonly inventariService: InventariService,) {}
 
-  @Post('')
+  @Post('inventari/:id')
   @UseInterceptors(FilesInterceptor('file'))
-  upload(@UploadedFiles() files) {
+  upload(@UploadedFiles() files, @Param('id') id_inventari: string) {
     console.log(files);
     const response = [];
+
     files.forEach((file) => {
+        const fileId = file.id.toString();
+        this.inventariService.updateInventari(parseInt(id_inventari), {
+          id_img: fileId, 
+        });
       const fileReponse = {
         originalname: file.originalname,
         encoding: file.encoding,
@@ -36,6 +44,7 @@ export class FilesController {
         md5: file.md5,
         uploadDate: file.uploadDate,
         contentType: file.contentType,
+        id_inventari: id_inventari,
       };
       response.push(fileReponse);
     });
