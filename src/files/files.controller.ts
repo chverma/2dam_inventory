@@ -13,10 +13,12 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { FilesService } from './files.service';
 import { FileResponseVm } from './view-models/file-response-vm.model';
 import { InventariService } from 'src/inventari/inventari.service';
+import { ObjectId } from 'mongodb';
 
 @Controller('/files')
 export class FilesController {
   constructor(
+    
     private readonly filesService: FilesService,
     private readonly inventariService: InventariService,) {}
 
@@ -110,5 +112,44 @@ export class FilesController {
       message: 'File has been deleted',
       file: file,
     };
+  }
+
+  @Post('device_info')
+  @UseInterceptors(
+    FilesInterceptor('file', 10, {
+      fileFilter: (req, file, callback) => {
+        if (file.mimetype !== 'application/json') {
+          return callback(new Error('Solo se permiten archivos JSON'), false);
+        }
+        callback(null, true);
+      },
+    }),
+  )
+  uploadDeviceInfo(@UploadedFiles() files) {
+    const response = [];
+    files.forEach(async (file) => {
+      const fileReponse = {
+        originalname: file.originalname,
+        encoding: file.encoding,
+        mimetype: file.mimetype,
+        id: file.id,
+        filename: file.filename,
+        metadata: file.metadata,
+        bucketName: file.bucketName,
+        chunkSize: file.chunkSize,
+        size: file.size,
+        md5: file.md5,
+        uploadDate: file.uploadDate,
+        contentType: file.contentType,
+      };
+      response.push(fileReponse);
+      const fileId = file.id as ObjectId;
+      if (!fileId) {
+        throw new Error('No se proporcionó un ID de archivo válido.');
+      }
+      const numSerie = await this.filesService.processJsonStream(fileId);
+      this.inventariService.vincularArchivo(numSerie, file.id);
+    });
+    return response;
   }
 }
