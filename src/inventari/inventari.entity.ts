@@ -39,6 +39,9 @@ export class Inventari {
   @Column()
   id_device_info: string;
 
+  @Column({ nullable: true })
+  id_img: string;
+
   @ManyToOne(
     () => Inventari_type,
     (inventariType) => inventariType.fk_inventari,

@@ -68,15 +68,15 @@ export class InventariService {
   }
 
   async updateInventari(id: number, inventariDto: UpdateInventariDto) {
-    const updatedData = {
-      ...inventariDto,
-      fk_inventary_type: { id_type: inventariDto.id_type },
-      fk_classroom: { id_classroom: inventariDto.id_classroom },
-    };
-
-    const inventari = await this.inventariRepository.findOneBy({
-      id_inventory: id,
+    const inventari = await this.inventariRepository.findOne({
+      where: { id_inventory: id },
+      relations: ['fk_inventary_type', 'fk_classroom'],
     });
+
+    if (!inventari) {
+      throw new HttpException('Inventario no encontrado', HttpStatus.NOT_FOUND);
+    }
+
     const text_etiqueta =
       inventari.fk_inventary_type.description +
       ' ' +
@@ -86,9 +86,16 @@ export class InventariService {
       ')';
 
     inventari.text_etiqueta = text_etiqueta;
-    if (!inventari) {
-      throw new HttpException('Inventario no encontrado', HttpStatus.NOT_FOUND);
+
+    if (inventariDto.id_img) {
+      inventari.id_img = inventariDto.id_img;
     }
+    const updatedData = {
+      ...inventariDto,
+      fk_inventary_type: { id_type: inventariDto.id_type },
+      fk_classroom: { id_classroom: inventariDto.id_classroom },
+    };
+
     this.inventariRepository.merge(inventari, updatedData);
     return this.inventariRepository.save(inventari);
   }

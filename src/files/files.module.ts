@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { FilesController } from './files.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import { GridFsMulterConfigService } from './multer-config.service';
@@ -10,7 +10,7 @@ import { InventariModule } from 'src/inventari/inventari.module';
     MulterModule.registerAsync({
       useClass: GridFsMulterConfigService,
     }),
-    InventariModule,
+    forwardRef(() => InventariModule),
   ],
   controllers: [FilesController],
   providers: [GridFsMulterConfigService, FilesService],

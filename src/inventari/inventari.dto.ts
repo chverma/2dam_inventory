@@ -26,6 +26,9 @@ export class CreateInventariDto {
   @IsInt()
   @IsNotEmpty()
   id_classroom: number;
+
+  @IsString()
+  id_img: string;
 }
 
 export class UpdateInventariDto {
@@ -60,4 +63,7 @@ export class UpdateInventariDto {
   @IsOptional()
   @IsInt()
   id_classroom?: number;
+
+  @IsString()
+  id_img: string;
 }
