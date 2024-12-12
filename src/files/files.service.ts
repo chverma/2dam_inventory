@@ -57,19 +57,19 @@ export class FilesService {
       const objectId = new ObjectId(id);
       console.log('Converted id to ObjectId:', objectId);
 
-      // const result = await this.fileModel.findById(objectId.toString());
-      // if (!result) {
-      //   console.error('File not found for id:', id);
-      //   throw new HttpException('File not found', HttpStatus.NOT_FOUND);
-      // }
+      const result = await this.fileModel.findById(objectId.toString());
+      if (!result) {
+        console.error('File not found for id:', id);
+        throw new HttpException('File not found', HttpStatus.NOT_FOUND);
+      }
 
-      // console.log('File info found:', result);
-      // return {
-      //   filename: result.filename,
-      //   length: result.length,
-      //   chunkSize: result.chunkSize,
-      //   contentType: result.contentType,
-      // };
+      console.log('File info found:', result);
+      return {
+        filename: result.filename,
+        length: result.length,
+        chunkSize: result.chunkSize,
+        contentType: result.contentType,
+      };
       return null;
     } catch (error) {
       console.error('Error in findInfo for id:', id, error);
