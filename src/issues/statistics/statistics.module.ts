@@ -6,9 +6,16 @@ import { Issue } from '../issues.entity';
 import { Status } from '../../status/status.entity';
 import { IssuesService } from '../issues.service';
 import { UtilsModule } from 'src/utils/utils.module';
+import { UsersModule } from 'src/users/users.module';
+import { FilesModule } from 'src/files/files.module';
 
 @Module({
-  imports: [UtilsModule, TypeOrmModule.forFeature([Issue, Status])],
+  imports: [
+    UtilsModule,
+    UsersModule,
+    FilesModule,
+    TypeOrmModule.forFeature([Issue, Status]),
+  ],
   providers: [StatisticsService, IssuesService],
   controllers: [StatisticsController],
 })
