@@ -14,13 +14,52 @@ import { FilesService } from './files.service';
 import { FileResponseVm } from './view-models/file-response-vm.model';
 import { InventariService } from 'src/inventari/inventari.service';
 import { ObjectId } from 'mongodb';
+import { IssuesService } from 'src/issues/issues.service';
 
 @Controller('/files')
 export class FilesController {
   constructor(
     private filesService: FilesService,
     private readonly inventariService: InventariService,
+    private readonly issuesService: IssuesService,
   ) {}
+
+  @Post('issues/:id')
+  @UseInterceptors(FilesInterceptor('file'))
+  async uploadIssueFiles(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Param('id') issueId: string,
+  ) {
+    console.log(files);
+    const response = [];
+
+    for (const file of files) {
+      const fileId = file.id.toString();
+      console.log(fileId);
+
+      await this.issuesService.addIssueImage(issueId, file);
+
+      const fileResponse = {
+        originalname: file.originalname,
+        encoding: file.encoding,
+        mimetype: file.mimetype,
+        id: file.id,
+        filename: file.filename,
+        metadata: file.metadata,
+        bucketName: file.bucketName,
+        chunkSize: file.chunkSize,
+        size: file.size,
+        md5: file.md5,
+        uploadDate: file.uploadDate,
+        contentType: file.contentType,
+        issueId: issueId,
+      };
+
+      response.push(fileResponse);
+    }
+
+    return response;
+  }
 
   @Post('')
   @UseInterceptors(FilesInterceptor('file'))

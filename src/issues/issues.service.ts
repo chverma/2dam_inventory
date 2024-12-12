@@ -1,17 +1,24 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  NotFoundException,
+} from '@nestjs/common';
 import { UtilsService } from '../utils/utils.service';
 import { Issue } from './issues.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/users/users.entity';
+import { FilesService } from 'src/files/files.service';
 
 @Injectable()
 export class IssuesService {
   constructor(
     private readonly UtilsService: UtilsService,
     @InjectRepository(Issue) private issueRepository: Repository<Issue>,
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    @InjectRepository(User) private userRepository: Repository<User>,
+
+    private readonly filesService: FilesService,
   ) {}
 
   async getAllIssues(xml?: string): Promise<Issue[] | string> {
@@ -52,7 +59,6 @@ export class IssuesService {
     }
     return savedIssue;
   }
-
   async getIssue(id: number, xml?: string): Promise<Issue | string | null> {
     const issue = await this.issueRepository.findOneBy({ id_issue: id });
     if (issue != null) {
@@ -80,5 +86,32 @@ export class IssuesService {
 
   async deleteIssue(id: number): Promise<void> {
     await this.issueRepository.delete(id);
+  }
+  async addIssueImage(issueId: string, file: Express.Multer.File) {
+    const issue = await this.issueRepository.findOne({
+      where: { id_issue: parseInt(issueId) },
+    });
+
+    if (!issue) {
+      throw new NotFoundException(`Issue con ID: ${issueId} no encontrada`);
+    }
+
+    if (issue.imageId) {
+      throw new HttpException(
+        'esta issue ya tiene una imagen',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const fileId = file.id.toString();
+
+    issue.imageId = fileId;
+
+    await this.issueRepository.save(issue);
+
+    return {
+      message: 'Imagen subida correctamente',
+      imageId: fileId,
+    };
   }
 }
