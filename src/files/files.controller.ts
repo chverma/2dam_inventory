@@ -1,19 +1,19 @@
 import {
-  Post,
-  Get,
-  Param,
-  Res,
   Controller,
-  UseInterceptors,
-  UploadedFiles,
+  Get,
   HttpException,
   HttpStatus,
+  Param,
+  Post,
+  Res,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { ObjectId } from 'mongodb';
+import { InventariService } from 'src/inventari/inventari.service';
 import { FilesService } from './files.service';
 import { FileResponseVm } from './view-models/file-response-vm.model';
-import { InventariService } from 'src/inventari/inventari.service';
-import { ObjectId } from 'mongodb';
 
 @Controller('/files')
 export class FilesController {
@@ -145,5 +145,48 @@ export class FilesController {
       this.inventariService.vincularArchivo(numSerie, file.id);
     });
     return response;
+  }
+  @Post('userfile')
+  @UseInterceptors(FilesInterceptor('file'))
+  uploadUser (@UploadedFiles() files) {
+    console.log(files);
+    const response = [];
+    files.forEach((file) => {
+      if (file.mimetype.startsWith('image/')) {
+        const fileReponse = {
+          originalname: file.originalname,
+          encoding: file.encoding,
+          mimetype: file.mimetype,
+          id: file.id,
+          filename: file.filename,
+          metadata: file.metadata,
+          bucketName: file.bucketName,
+          chunkSize: file.chunkSize,
+          size: file.size,
+          md5: file.md5,
+          uploadDate: file.uploadDate,
+          contentType: file.contentType,
+        };
+        response.push(fileReponse);
+      } else {
+        throw new HttpException('Solo se permiten imágenes', HttpStatus.BAD_REQUEST);
+      }
+    });
+    return response;
+  }
+  @Get('info/:id')
+  async getFileUser(@Param('id') id: string): Promise<FileResponseVm> {
+    const file = await this.filesService.findInfo(id);
+    const filestream = await this.filesService.readStream(id);
+    if (!filestream) {
+      throw new HttpException(
+        'An error occurred while retrieving file info',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+    return {
+      message: 'File has been detected',
+      file: file,
+    };
   }
 }
