@@ -70,35 +70,36 @@ export class InventariService {
   async updateInventari(id: number, inventariDto: UpdateInventariDto) {
     const inventari = await this.inventariRepository.findOne({
       where: { id_inventory: id },
-      relations: ['fk_inventary_type', 'fk_classroom'], 
+      relations: ['fk_inventary_type', 'fk_classroom'],
     });
-  
+
     if (!inventari) {
       throw new HttpException('Inventario no encontrado', HttpStatus.NOT_FOUND);
     }
-  
-    const text_etiqueta = inventari.fk_inventary_type.description +
+
+    const text_etiqueta =
+      inventari.fk_inventary_type.description +
       ' ' +
       inventari.model +
       '(' +
       inventari.brand +
       ')';
-  
+
     inventari.text_etiqueta = text_etiqueta;
-  
+
     if (inventariDto.id_img) {
       inventari.id_img = inventariDto.id_img;
     }
-      const updatedData = {
+    const updatedData = {
       ...inventariDto,
       fk_inventary_type: { id_type: inventariDto.id_type },
       fk_classroom: { id_classroom: inventariDto.id_classroom },
     };
-  
+
     this.inventariRepository.merge(inventari, updatedData);
     return this.inventariRepository.save(inventari);
   }
-  
+
   async deleteInventari(id: number): Promise<{ message: string }> {
     const result = await this.inventariRepository.delete(id);
     if (result.affected === 0) {

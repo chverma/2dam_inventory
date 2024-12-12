@@ -10,7 +10,7 @@ import { InventariModule } from 'src/inventari/inventari.module';
     MulterModule.registerAsync({
       useClass: GridFsMulterConfigService,
     }),
-    forwardRef(() =>InventariModule) 
+    forwardRef(() => InventariModule),
   ],
   controllers: [FilesController],
   providers: [GridFsMulterConfigService, FilesService],

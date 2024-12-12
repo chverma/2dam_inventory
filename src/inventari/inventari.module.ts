@@ -8,7 +8,12 @@ import { LabelsModule } from 'src/utils/labels.module';
 import { FilesModule } from 'src/files/files.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Inventari]), UtilsModule, LabelsModule, forwardRef(() => FilesModule)],
+  imports: [
+    TypeOrmModule.forFeature([Inventari]),
+    UtilsModule,
+    LabelsModule,
+    forwardRef(() => FilesModule),
+  ],
   exports: [TypeOrmModule, InventariService],
   controllers: [InventariController],
   providers: [InventariService],

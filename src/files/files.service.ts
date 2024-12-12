@@ -31,7 +31,9 @@ export class FilesService {
       const objectId = new ObjectId(id);
       console.log('Converted id to ObjectId:', objectId);
 
-      const filestream = await this.fileModel.readFileStream(objectId.toString());
+      const filestream = await this.fileModel.readFileStream(
+        objectId.toString(),
+      );
       if (!filestream) {
         console.error('File stream not found for id:', id);
         throw new HttpException('File stream not found', HttpStatus.NOT_FOUND);
@@ -41,7 +43,10 @@ export class FilesService {
       return filestream;
     } catch (error) {
       console.error('Error in readStream for id:', id, error);
-      throw new HttpException('Error occurred while retrieving file', HttpStatus.EXPECTATION_FAILED);
+      throw new HttpException(
+        'Error occurred while retrieving file',
+        HttpStatus.EXPECTATION_FAILED,
+      );
     }
   }
 
@@ -89,7 +94,10 @@ export class FilesService {
       }
     } catch (error) {
       console.error('Error in deleteFile for id:', id, error);
-      throw new HttpException('Error occurred while deleting file', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Error occurred while deleting file',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
